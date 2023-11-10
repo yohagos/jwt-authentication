@@ -1,5 +1,6 @@
 package com.jwtauthentication.security.auth;
 
+import com.jwtauthentication.security.user.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,4 +16,5 @@ public class RegisterRequest {
     private String lastname;
     private String email;
     private String password;
+    private Role role;
 }

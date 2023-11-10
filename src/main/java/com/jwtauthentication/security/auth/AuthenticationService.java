@@ -19,13 +19,12 @@ public class AuthenticationService {
 
     private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtService service;
+    private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
     private static final Logger log = LoggerFactory.getLogger(AuthenticationService.class);
 
     public AuthenticationResponse register(RegisterRequest request) {
-        log.info(request.toString());
         var user = User.builder()
                 .firstname(request.getFirstname())
                 .lastname(request.getLastname())
@@ -33,12 +32,13 @@ public class AuthenticationService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.USER)
                 .build();
-        log.info(user.toString());
-        repository.save(user);
-        var jwtToken = service.generateToken(user);
+
+        var saveUser = repository.save(user);
+        var jwtToken = jwtService.generateToken(user);
+        var refreshToken = jwtService.generateRefreshToken(user);
         return AuthenticationResponse
                 .builder()
-                .token(jwtToken)
+                .accessToken(jwtToken)
                 .build();
     }
 
@@ -53,10 +53,14 @@ public class AuthenticationService {
                 repository
                         .findByEmail(request.getEmail())
                         .orElseThrow();
-        var jwtToken = service.generateToken(user);
+        var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse
                 .builder()
-                .token(jwtToken)
+                .refreshToken(jwtToken)
                 .build();
+    }
+
+    private void saveUserToken(User user, String jwtToken) {
+        //var token = Tok
     }
 }
